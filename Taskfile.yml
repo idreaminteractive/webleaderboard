@@ -2,9 +2,26 @@ interval: "500ms"
 version: "3"
 
 tasks:
+
+  component: 
+    cmds: 
+      - cd common && gleam run -m lustre/dev build component common/counter --outdir=../server/priv/static      
+
+
+  server:
+    cmds: 
+      - cd server && gleam run
+
+  build-dev:
+    deps: [component, server]
+
   dev:
-    cmds:
-      - watchexec --restart --verbose --clear --wrap-process=session --stop-signal SIGTERM --exts gleam --watch src/ -- "gleam run"
+    cmds:      
+      - watchexec --restart --verbose --clear --wrap-process=session --stop-signal SIGTERM --exts gleam -w server/src -w common/src -- "task build-dev"
+  
+
+
+
 
   docker-build:
     cmds:
@@ -14,3 +31,7 @@ tasks:
     cmds:
       - docker  run -it -p 8080:8080 latest
 
+
+  build:
+    cmds:
+      - cd common && gleam clean && gleam run -m lustre/dev build component common/counter --outdir=../server/priv/static
