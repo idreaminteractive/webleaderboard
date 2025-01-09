@@ -1,0 +1,54 @@
+interval: "500ms"
+version: "3"
+
+tasks:
+  mailhog:
+    cmds:
+      - fuser -k -n file -SIGINT /home/gitpod/go-packages/bin/MailHog 2>/dev/null || true
+      - MailHog >/dev/null 2>&1
+
+  mailhog-verbose:
+    cmds:
+      - fuser -k -n file -SIGINT /home/gitpod/go-packages/bin/MailHog 2>/dev/null || true
+      - MailHog
+
+  dev:
+    cmds:
+      - watchexec --restart --verbose --clear --wrap-process=session --stop-signal SIGTERM --exts gleam --watch src/ -- "gleam run"
+
+  remove-dbs:
+    cmds:
+      - rm -f ./data/*.db
+
+  reset:
+    cmds:
+      - task: remove-dbs
+      - task: local-migrate
+      - task: sqlc
+
+  sqlc:
+    cmds:
+      - sqlc generate
+      - rm src/app/gen/sqlc_sqlite.gleam
+      - gleam run --module sqlc/sqlc
+      - gleam format
+
+  create-migration:
+    cmds:
+      - dbmate -d "./migrations" new  {{.CLI_ARGS}}
+
+  local-migrate:
+    cmds:
+      - DATABASE_URL="sqlite:data/sqlite.db" dbmate -d "./migrations" up
+
+  docker-build:
+    cmds:
+      - docker build -f Dockerfile . -t latest
+
+  docker-run:
+    cmds:
+      - docker  run -it -p 8080:8080 latest
+
+  load-test:
+    cmds:
+      - docker run --net=host --rm williamyeh/wrk -t10 -c100 -d10s http://localhost:8080/

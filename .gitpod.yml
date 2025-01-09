@@ -1,0 +1,35 @@
+image:
+  file: .gitpod.Dockerfile
+
+tasks:
+  # - init: |
+      
+  - command: |
+      mkdir data
+      gleam build 
+      
+
+# ports:
+#   - name: Site
+#     description: App
+#     port: 8080
+#     visibility: public
+#   - name: Hot reload
+#     description: App HMR
+#     port: 8082
+#     onOpen: ignore
+#     visibility: public
+#   - name: MailHog
+#     description: Fake email server
+#     port: 8025
+#     onOpen: ignore
+#     visibility: public
+
+vscode:
+  extensions:
+    - redhat.vscode-yaml
+    - eamodio.gitlens
+    - adpyke.vscode-sql-formatter
+    - yy0931.vscode-sqlite3-editor
+    - gleam.gleam
+    - gruntfuggly.todo-tree
