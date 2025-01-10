@@ -3,11 +3,9 @@ image:
 
 tasks:
   # - init: |
-      
+
   - command: |
       mkdir data
-      gleam build 
-      
 
 # ports:
 #   - name: Site

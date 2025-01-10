@@ -1,9 +1,13 @@
 import common/counter
+
 import gleam/bytes_tree
 import gleam/erlang
 import gleam/erlang/process.{type Selector, type Subject}
 import gleam/http/request.{type Request}
 import gleam/http/response.{type Response}
+
+import youid/uuid
+
 import gleam/json
 import gleam/option.{type Option, None, Some}
 import gleam/otp/actor
@@ -20,6 +24,10 @@ import mist.{
 }
 
 pub fn main() {
+  // let assert Ok(my_actor) = actor.start(0, fetcher.handle_message)
+  let assert Ok(lactor) = lustre.start_actor(counter.app(), Nil)
+  let id = uuid.v4_string()
+
   let assert Ok(_) =
     fn(req: Request(Connection)) -> Response(ResponseData) {
       case request.path_segments(req) {
@@ -28,15 +36,7 @@ pub fn main() {
         ["counter"] ->
           mist.websocket(
             request: req,
-            on_init: socket_init,
-            on_close: socket_close,
-            handler: socket_update,
-          )
-
-        ["counter_other"] ->
-          mist.websocket(
-            request: req,
-            on_init: socket_init,
+            on_init: socket_init(_, ComponentState(lactor, id)),
             on_close: socket_close,
             handler: socket_update,
           )
@@ -74,54 +74,6 @@ pub fn main() {
                 ),
               ]),
               html.body([], [
-                ui.stack(
-                  [attribute.style([#("width", "60ch"), #("margin", "auto")])],
-                  [
-                    html.h1([], [html.text("Universal components")]),
-                    html.p([], [
-                      html.text("In Lustre, applications are built around the "),
-                      html.text("MVU architecture with a model representing "),
-                      html.text("program state, a view function to render "),
-                      html.text("that state, and an update function to handle "),
-                      html.text("events and update that state."),
-                    ]),
-                    html.p([], [
-                      html.text("These three building blocks are encapsulated "),
-                      html.text("by the `App` type. Lustre's secret weapon is "),
-                      html.text("that the same app can be run multiple ways "),
-                      html.text("without changing the core app code."),
-                    ]),
-                    html.p([], [
-                      html.text("Below, we have a counter app rendered three "),
-                      html.text("different ways. Once as a traditional client "),
-                      html.text("side app - suitable as a SPA. Then that "),
-                      html.text("counter has been bundled as a Custom Element "),
-                      html.text("and rendered as a <counter-component>. And "),
-                      html.text("finally as a server component. Here all of "),
-                      html.text("component's logic and rendering happens on "),
-                      html.text("the server and a tiny (<6kb!) runtime "),
-                      html.text("patches the DOM in the browser."),
-                    ]),
-                    html.p([], [
-                      html.text("For the two component versions of the app, "),
-                      html.text("try opening your browser's dev tools and "),
-                      html.text("setting the `count` attribute for each "),
-                      html.text("component. You can also attach event "),
-                      html.text("listeners and listen for 'incr' and 'decr' "),
-                      html.text("events."),
-                    ]),
-                  ],
-                ),
-                ui.box([], [
-                  ui.sequence([], [
-                    ui.stack([], [
-                      html.h2([], [html.text("Server Componen2t:")]),
-                      server_component.component([
-                        server_component.route("/counter_other"),
-                      ]),
-                    ]),
-                  ]),
-                ]),
                 ui.box([], [
                   ui.sequence([], [
                     ui.stack([], [
@@ -148,23 +100,29 @@ pub fn main() {
 }
 
 //
+pub type ComponentState {
+  ComponentState(component: Counter, id: String)
+}
 
 type Counter =
   Subject(lustre.Action(counter.Msg, lustre.ServerComponent))
 
 fn socket_init(
   _conn: WebsocketConnection,
-) -> #(Counter, Option(Selector(lustre.Patch(counter.Msg)))) {
+  state: ComponentState,
+) -> #(ComponentState, Option(Selector(lustre.Patch(counter.Msg)))) {
   let self = process.new_subject()
   let selector = process.selecting(process.new_selector(), self, fn(a) { a })
-  let assert Ok(counter) = lustre.start_actor(counter.app(), Nil)
-
-  process.send(counter, server_component.subscribe("ws", process.send(self, _)))
-  #(counter, Some(selector))
+  let id = uuid.v4_string()
+  process.send(
+    state.component,
+    server_component.subscribe(id, process.send(self, _)),
+  )
+  #(state, Some(selector))
 }
 
 fn socket_update(
-  counter: Counter,
+  state: ComponentState,
   conn: WebsocketConnection,
   msg: WebsocketMessage(lustre.Patch(counter.Msg)),
 ) {
@@ -173,16 +131,15 @@ fn socket_update(
       // we attempt to decode the incoming text as an action to send to our
       // server component runtime.
       let action = json.decode(json, server_component.decode_action)
-
       case action {
-        Ok(action) -> process.send(counter, action)
+        Ok(action) -> process.send(state.component, action)
         Error(_) -> Nil
       }
 
-      actor.continue(counter)
+      actor.continue(state)
     }
 
-    mist.Binary(_) -> actor.continue(counter)
+    mist.Binary(_) -> actor.continue(state)
     mist.Custom(patch) -> {
       let assert Ok(_) =
         patch
@@ -190,12 +147,12 @@ fn socket_update(
         |> json.to_string
         |> mist.send_text_frame(conn, _)
 
-      actor.continue(counter)
+      actor.continue(state)
     }
     mist.Closed | mist.Shutdown -> actor.Stop(process.Normal)
   }
 }
 
-fn socket_close(counter: Counter) {
-  process.send(counter, lustre.shutdown())
+fn socket_close(state: ComponentState) {
+  process.send(state.component, lustre.shutdown())
 }

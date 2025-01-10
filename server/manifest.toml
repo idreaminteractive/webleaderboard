@@ -45,11 +45,13 @@ packages = [
   { name = "term_size", version = "1.0.1", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "term_size", source = "hex", outer_checksum = "D00BD2BC8FB3EBB7E6AE076F3F1FF2AC9D5ED1805F004D0896C784D06C6645F1" },
   { name = "tom", version = "1.1.1", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "tom", source = "hex", outer_checksum = "0910EE688A713994515ACAF1F486A4F05752E585B9E3209D8F35A85B234C2719" },
   { name = "wisp", version = "1.5.1", build_tools = ["gleam"], requirements = ["directories", "exception", "gleam_crypto", "gleam_erlang", "gleam_http", "gleam_json", "gleam_stdlib", "logging", "marceau", "mist", "simplifile"], otp_app = "wisp", source = "hex", outer_checksum = "DB7968F777CA77B41AAC8067A5151B022E857E1EECF16BFC9D5F914D0F628844" },
+  { name = "youid", version = "1.2.0", build_tools = ["gleam"], requirements = ["gleam_crypto", "gleam_erlang", "gleam_stdlib"], otp_app = "youid", source = "hex", outer_checksum = "EF0F693004E221155EE5909C6D3C945DD14F7117DBA882887CF5F45BE399B8CA" },
 ]
 
 [requirements]
 common = { path = "../common" }
 gleam_erlang = { version = ">= 0.33.0 and < 1.0.0" }
+gleam_http = { version = ">= 3.7.2 and < 4.0.0" }
 gleam_json = { version = ">= 2.3.0 and < 3.0.0" }
 gleam_otp = { version = ">= 0.16.0 and < 1.0.0" }
 gleam_stdlib = { version = ">= 0.44.0 and < 2.0.0" }
@@ -59,3 +61,4 @@ lustre_dev_tools = { version = ">= 1.6.5 and < 2.0.0" }
 lustre_ui = { version = ">= 0.4.0 and < 1.0.0" }
 mist = { version = ">= 4.0.4 and < 5.0.0" }
 wisp = { version = ">= 1.5.1 and < 2.0.0" }
+youid = { version = ">= 1.2.0 and < 2.0.0" }
