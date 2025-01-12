@@ -25,7 +25,7 @@ ENV GLEAM_VERSION=1.7.0
 ENV ELIXIR_VERSION=1.18
 ENV ERLANG_VERSION=27.1.2
 ENV REBAR_VERSION=3.24.0
-RUN echo "gleam ${GLEAM_VERSION}\nerlang ${ERLANG_VERSION}\nrebar ${REBAR_VERSION}\n elixir ${ELIXIR_VERSION}" | tee -a .tool-versions
+RUN echo "gleam ${GLEAM_VERSION}\nerlang ${ERLANG_VERSION}\nrebar ${REBAR_VERSION}\nelixir ${ELIXIR_VERSION}" | tee -a .tool-versions
 RUN asdf install 
 RUN echo 'export PATH=$PATH:/$HOME/.asdf/shims' >> .bashrc
 
