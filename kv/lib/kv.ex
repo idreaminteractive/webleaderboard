@@ -1,33 +1,21 @@
-defmodule LanguageList do
-  def new() do
-    # Please implement the new/0 function
-    []
+defmodule BirdCount do
+  def today(list) do
+    # Please implement the today/1 function
   end
 
-  def add(list, language) do
-    # Please implement the add/2 function
-    [language | list]
+  def increment_day_count(list) do
+    # Please implement the increment_day_count/1 function
   end
 
-  def remove(list) do
-    # Please implement the remove/1 function
-    [head | tail] = list
-    tail
+  def has_day_without_birds?(list) do
+    # Please implement the has_day_without_birds?/1 function
   end
 
-  def first(list) do
-    # Please implement the first/1 function
-    [head | tail] = list
-    head
+  def total(list) do
+    # Please implement the total/1 function
   end
 
-  def count(list) do
-    # Please implement the count/1 function
-    Kernel.length(list)
-  end
-
-  def functional_list?(list) do
-    # Please implement the functional_list?/1 function
-    "Elixir" in list
+  def busy_days(list) do
+    # Please implement the busy_days/1 function
   end
 end
