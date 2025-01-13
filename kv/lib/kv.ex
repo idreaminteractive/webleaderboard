@@ -1,30 +1,18 @@
-defmodule HighScore do
-  def new() do
-    %{}
-  end
+defmodule Username do
+  def sanitize([]), do: []
 
-  def add_player(scores, name, score \\ 0) do
-    # Please implement the add_player/3 function
-    Map.put(scores, name, score)
-  end
+  def sanitize([head | tail]) do
+    cleaned =
+      case head do
+        ?ß -> ~c'ss'
+        ?ä -> ~c'ae'
+        ?ö -> ~c'oe'
+        ?ü -> ~c'ue'
+        x when x >= ?a and x <= ?z -> [x]
+        ?_ -> ~c'_'
+        _ -> ~c''
+      end
 
-  def remove_player(scores, name) do
-    # Please implement the remove_player/2 function
-    Map.delete(scores, name)
-  end
-
-  def reset_score(scores, name) do
-    # Please implement the reset_score/2 function
-    Map.update(scores, name, 0 )
-  end
-
-  def update_score(scores, name, score) do
-    # Please implement the update_score/3 function
-    Map.update(scores, name, score )
-  end
-
-  def get_players(scores) do
-    # Please implement the get_players/1 function
-    Map.keys(scores)
+    cleaned ++ sanitize(tail)
   end
 end
