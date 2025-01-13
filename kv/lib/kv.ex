@@ -1,30 +1,31 @@
-defmodule HighScore do
-  def new() do
-    %{}
+defmodule BoutiqueInventory do
+  def sort_by_price(inventory) do
+    Enum.sort_by(inventory, & &1.price)
   end
 
-  def add_player(scores, name, score \\ 0) do
-    # Please implement the add_player/3 function
-    Map.put(scores, name, score)
+  def with_missing_price(inventory) do
+    Enum.filter(inventory, &(!&1.price))
   end
 
-  def remove_player(scores, name) do
-    # Please implement the remove_player/2 function
-    Map.delete(scores, name)
+  def update_names(inventory, old_word, new_word) do
+    Enum.map(inventory, fn item ->
+      new_name = String.replace(item.name, old_word, new_word)
+      %{item | name: new_name}
+    end)
   end
 
-  def reset_score(scores, name) do
-    # Please implement the reset_score/2 function
-    Map.update(scores, name, 0 )
+  def increase_quantity(item, count) do
+    new_sizes =
+      Enum.reduce(item.quantity_by_size, %{}, fn {size, prev_count}, sizes ->
+        Map.put(sizes, size, prev_count + count)
+      end)
+
+    Map.put(item, :quantity_by_size, new_sizes)
   end
 
-  def update_score(scores, name, score) do
-    # Please implement the update_score/3 function
-    Map.update(scores, name, score )
-  end
-
-  def get_players(scores) do
-    # Please implement the get_players/1 function
-    Map.keys(scores)
+  def total_quantity(%{quantity_by_size: sizes}) do
+    Enum.reduce(sizes, 0, fn {_size, quantity}, total_quantity ->
+      quantity + total_quantity
+    end)
   end
 end
