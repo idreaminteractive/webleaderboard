@@ -5,6 +5,7 @@ tasks:
   # - init: |
 
   - command: |
+      mix archive.install --force hex phx_new
       mkdir data
 
 vscode:
