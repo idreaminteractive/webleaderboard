@@ -1,8 +1,10 @@
 defmodule HelloWeb.CartItemController do
   use HelloWeb, :controller
-  alias HelloWeb.ShoppingCart
+  alias Hello.ShoppingCart
 
   def create(conn, %{"product_id" => product_id}) do
+    conn.assigns.cart |> dbg
+
     case ShoppingCart.add_item_to_cart(conn.assigns.cart, product_id) do
       {:ok, _item} ->
         conn
