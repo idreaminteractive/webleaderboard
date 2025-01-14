@@ -20,5 +20,8 @@
             "icon": "issue-closed"
         }
     },
-    "todo-tree.highlights.useColourScheme": true
+    "todo-tree.highlights.useColourScheme": true,
+    "emmet.includeLanguages": {
+        "html-eex": "html"
+    }
 }
