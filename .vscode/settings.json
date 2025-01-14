@@ -22,6 +22,7 @@
     },
     "todo-tree.highlights.useColourScheme": true,
     "emmet.includeLanguages": {
-        "html-eex": "html"
+        "html-eex": "html",
+        "phoenix-heex": "html"
     }
 }
