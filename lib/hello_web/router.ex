@@ -22,6 +22,7 @@ defmodule HelloWeb.Router do
     get("/hello", HelloController, :index)
     get("/redirect_test", PageController, :redirect_test)
     get("/hello/:messenger", HelloController, :show)
+    resources("/products", ProductController)
   end
 
   # Other scopes may use custom stacks.
