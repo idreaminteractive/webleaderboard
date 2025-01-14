@@ -8,6 +8,7 @@ tasks:
       mix archive.install --force hex phx_new
       mix deps.get
       mkdir data
+      mix phx.server
 
 vscode:
   extensions:

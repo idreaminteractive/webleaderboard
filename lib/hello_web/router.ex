@@ -2,7 +2,7 @@ defmodule HelloWeb.Router do
   use HelloWeb, :router
 
   pipeline :browser do
-    plug(:accepts, ["html"])
+    plug(:accepts, ["html", "json"])
     plug(:fetch_session)
     plug(:fetch_live_flash)
     plug(:put_root_layout, html: {HelloWeb.Layouts, :root})
@@ -18,8 +18,9 @@ defmodule HelloWeb.Router do
   scope "/", HelloWeb do
     pipe_through(:browser)
 
-    get("/", PageController, :home)
+    get("/", PageController, :index)
     get("/hello", HelloController, :index)
+    get("/redirect_test", PageController, :redirect_test)
     get("/hello/:messenger", HelloController, :show)
   end
 

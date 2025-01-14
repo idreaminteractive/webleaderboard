@@ -1,4 +1,4 @@
 # Hello
 
 
-https://hexdocs.pm/phoenix/request_lifecycle.html#a-new-controller
+https://hexdocs.pm/phoenix/components.html
